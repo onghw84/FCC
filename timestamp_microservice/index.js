@@ -24,11 +24,11 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-// your first API endpoint... 
-app.get("/api/:word", function (req, res) {
-  let d = new Date(req.params.word);
-  if (!isNaN(+req.params.word)){
-    d = new Date(+req.params.word);  
+// your date API endpoint... 
+app.get("/api/:date", function (req, res) {
+  let d = new Date(req.params.date);
+  if (!isNaN(+req.params.date)){
+    d = new Date(+req.params.date);  
   }
   
   if (isNaN(d)){
@@ -37,6 +37,12 @@ app.get("/api/:word", function (req, res) {
   else {        
     res.json({"unix":d.getTime(), "utc": d.toUTCString()});
   }
+});
+
+// your empty date API endpoint... 
+app.get("/api/", function (req, res) {
+  let d = new Date();
+  res.json({"unix":d.getTime(), "utc": d.toUTCString()});
 });
 
 // Listen on port set in environment variable or default to 3000
