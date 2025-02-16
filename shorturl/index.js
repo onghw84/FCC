@@ -46,36 +46,40 @@ app.post('/api/shorturl', function(req, res) {
   try {
     //check if it's a valid URL
     const fccUrl = new URL(req.body.url);
-    console.log(fccUrl);
-    console.log(fccUrl.hostname);
 
-    //check if URL can be resolved
-    dns.lookup(fccUrl.hostname, options, function (err, addresses) {
-      if (addresses) {
-        //search database for shorturl
-        Url.findOne({url: fccUrl.hostname}).exec(
-          function (err, data){
-            if (err) return console.log(err);
-            if (data){
-              console.log("found url");
-              res.json({"original_url":req.body.url,"short_url":data.shorturl});
-            }
-            else {
-              //if shorturl not available, create one and save to database
-              console.log("create shorturl");
-              var newurl = new Url({url: req.body.url, shorturl: ++count});
-              newurl.save(function(err, data) {
-                if (err) return console.error(err);
+    //check to pass test4
+    if (/^https*:\/\//i.test(req.body.url)){
+      //check if URL can be resolved
+      dns.lookup(fccUrl.hostname, options, function (err, addresses) {
+        if (addresses) {
+          //search database for shorturl
+          Url.findOne({url: fccUrl.hostname}).exec(
+            function (err, data){
+              if (err) return console.log(err);
+              if (data){
+                console.log("found url");
                 res.json({"original_url":req.body.url,"short_url":data.shorturl});
-              });
-            }
-          });
-      }
-      else {
-        //URL cannot be resolved
-        res.json({"error":"Invalid Hostname"});
-      }
-    })
+              }
+              else {
+                //if shorturl not available, create one and save to database
+                console.log("create shorturl");
+                var newurl = new Url({url: req.body.url, shorturl: ++count});
+                newurl.save(function(err, data) {
+                  if (err) return console.error(err);
+                  res.json({"original_url":req.body.url,"short_url":data.shorturl});
+                });
+              }
+            });
+        }
+        else {
+          //URL cannot be resolved
+          res.json({"error":"Invalid Hostname"});
+        }
+      })
+    }
+    else {
+      res.json({ "error": 'Invalid URL' });
+    }
   }
   catch {
     //invalid URL
