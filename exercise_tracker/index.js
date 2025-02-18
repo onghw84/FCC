@@ -49,7 +49,18 @@ app.post('/api/users/', (req, res) => {
 app.post('/api/users/:_id/exercises', (req, res) => {
   //look for id in users  
   User.findById({"_id":req.params._id}, function(err, data){
-    if (err) {res.send(err); return;}
+    if (err) {res.send(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Error</title>
+        </head>      
+        <body>
+          <h1>Error</h1>
+          <p>${err}</p>
+        </body>
+      </html>`
+    ); return;}
 
     //if user is available
     if (data){
@@ -59,10 +70,15 @@ app.post('/api/users/:_id/exercises', (req, res) => {
         return;
       }
       
-      //check if description is available
+      //check if duration is available
       if (req.body.duration == ""){
         res.json({"Error":"Duration input is required"});
         return;
+      }
+      //check if duration is valid integer
+      if (isNaN(parseInt(req.body.duration))){
+        res.json({"Error":"Please enter valid duration"});
+        return;        
       }
 
       //check if date input is valid
@@ -86,21 +102,32 @@ app.post('/api/users/:_id/exercises', (req, res) => {
           });           
         }
         else {
-          res.json({"Error":"Invalid date"}); return;
+          res.json({"Error":`Invalid date ${req.body.date}`}); return;
         }
       }   
     }
     else {
-      res.json({"Error":"Username not found"});
+      res.json({"Error":`User with ID ${req.params._id} not found`});
     }
   })
 });
 
 app.get('/api/users/:_id/logs',  (req, res) => {
   User.findById({"_id":req.params._id}, function(err, data){
-    //if (err) {res.send(err); return;}
-    
-    if (err) {res.status(500).send(`<p>${err}</p>`); return;}
+    if (err) {res.send(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Error</title>
+        </head>      
+        <body>
+          <h1>Error</h1>
+          <p>${err}</p>
+        </body>
+      </html>`
+    ); return;}
+    //if (err) {res.sendFile(__dirname + '/views/error.html'); return;}
+    //if (err) {res.status(500).send(`<p>${err}</p>`); return;}
     //user found
     //console.log(data);
     if (data){      
@@ -161,7 +188,7 @@ app.get('/api/users/:_id/logs',  (req, res) => {
       });      
     }
     else {
-      res.json({Error: "User not found"});
+      res.json({Error: `User with ID ${req.params._id} not found`});
     }
   });
 });
