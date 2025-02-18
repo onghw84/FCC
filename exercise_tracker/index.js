@@ -10,7 +10,7 @@ let mongoose = require('mongoose');
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: true }
+  username: { type: String, required: true }
 });
 
 const exerciseSchema = new mongoose.Schema({
@@ -39,10 +39,10 @@ app.get('/api/users', (req, res) => {
 
 app.post('/api/users/', (req, res) => {
   //add user ID in mongoose
-  var user = new User({name: req.body.username});
+  var user = new User({username: req.body.username});
   user.save(function(err, data) {
     if (err) return console.error(err);
-    res.json({"username": data.name, "_id": data._id});
+    res.json({"username": data.username, "_id": data._id});
   });    
 });
 
@@ -82,7 +82,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
           });
           exercise.save(function(err, data1) {
             if (err) return console.error(err);
-            res.json({"_id": req.params._id, "username": data.name, "date": data1.date.toDateString(), "duration":parseInt(req.body.duration), "description": req.body.description});
+            res.json({"_id": req.params._id, "username": data.username, "date": data1.date.toDateString(), "duration":parseInt(req.body.duration), "description": req.body.description});
           });           
         }
         else {
@@ -107,14 +107,15 @@ app.get('/api/users/:_id/logs',  (req, res) => {
       //check if query parameters available
       var resp = {};
       var query_user = {"user_id":req.params._id};
-      var query_date = {"date":{}};
+      var query_date = {};
       resp._id = req.params._id;
-      resp.username = data.name;
+      resp.username = data.username;
 
       if (req.query.from){
         if (!isNaN(new Date(req.query.from).getTime())){
           var from = new Date(req.query.from);
           resp.from = from.toDateString();
+          query_date.date = {};
           query_date.date.$gte = from;
         }
       }
@@ -122,7 +123,13 @@ app.get('/api/users/:_id/logs',  (req, res) => {
         if (!isNaN(new Date(req.query.to).getTime())){
           var to = new Date(req.query.to);
           resp.to = to.toDateString();
-          query_date.date.$lte = to;
+          if (query_date.date){
+            query_date.date.$lte = to;
+          }
+          else {
+            query_date.date = {};
+            query_date.date.$lte = to;
+          }
         }
       }
       var limit = NaN;
@@ -130,6 +137,8 @@ app.get('/api/users/:_id/logs',  (req, res) => {
         limit = parseInt(req.query.limit);
       }
       
+      console.log(query_user);
+      console.log(query_date);
       Exercise.find({$and: [query_user,query_date]})
       .limit(limit).exec( function(err, exerdata){
         //console.log(exerdata);
