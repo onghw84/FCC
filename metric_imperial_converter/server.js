@@ -33,7 +33,7 @@ app.get('/api/convert', function(req, res) {
   const initNum = getNum(req.query.input);
   const initUnit = getUnit(req.query.input);
   const returnUnit = getReturnUnit(initUnit);
-  const returnNum = convert(initNum,initUnit).toFixed(5);
+  const returnNum = math.round(convert(initNum,initUnit)*100000)/100000;
   const returnString = getString(initNum, initUnit, returnNum, returnUnit);
   if (initNum == 0){
     if (initUnit == "invalid unit" || returnUnit == "invalid unit"){
