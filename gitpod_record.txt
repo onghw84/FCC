@@ -1,0 +1,10 @@
+FCC quality assurance certification & authentication & serverio
+ong, testpwd
+GitHub oauth client secret 22b55ad46c22ae559f41ab9e9c342152ec9230bd
+https://freecodecam-boilerplate-qxq6ean820d.ws-us117.gitpod.io/
+
+Metric_Imperial_Converter
+https://freecodecam-boilerplate-laiu3q3kukp.ws-us118.gitpod.io/
+
+Issue_Tracker
+https://freecodecam-boilerplate-z5zdtnqe5ov.ws-us118.gitpod.io/
