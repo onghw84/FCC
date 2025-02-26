@@ -34,7 +34,8 @@ const issueSchema = new mongoose.Schema({
 const Issue = mongoose.model('Issue', issueSchema);
 
 //clean up database
-Issue.remove({project: "test_project"}, function (err, data){
+//Issue.remove({project: "test_project"}, function (err, data){
+Issue.remove({}, function (err, data){
   if (err) return console.log(err);
   console.log("clean up database");
 })
@@ -86,7 +87,7 @@ app.get('/api/issues/:project', (req, res) => {
     querystr.updated_on = req.query.updated_on;
   }    
 
-  Issue.find(querystr, function (err, data){
+  Issue.find(querystr).select({project: false, __v: false}).exec(function (err, data){
     if (err) return console.error(err);
     res.json(data);
   });    
@@ -94,23 +95,24 @@ app.get('/api/issues/:project', (req, res) => {
 
 app.post('/api/issues/:project', function(req,res){
   //check if title is available
-  if (req.body.issue_title == ""){
-    res.json({"Error":"required field(s) missing"});
+  if (!req.body.hasOwnProperty('issue_title')){
+    res.json({"error":"required field(s) missing"});
     return;
   }
   
   //check if text is available
-  if (req.body.issue_text == ""){
-    res.json({"Error":"required field(s) missing"});
+  if (!req.body.hasOwnProperty('issue_text')){
+    res.json({"error":"required field(s) missing"});
     return;
   }
 
-  //check if created by is valid integer
-  if (req.body.created_by == ""){
-    res.json({"Error":"required field(s) missing"});
+  //check if created by is available
+  if (!req.body.hasOwnProperty('created_by')){
+    res.json({"error":"required field(s) missing"});
     return;        
   }
 
+  
   const create_date = new Date();
   var issue = new Issue({
     issue_title: req.body.issue_title,
@@ -118,18 +120,24 @@ app.post('/api/issues/:project', function(req,res){
     created_on: create_date,
     updated_on: create_date,
     created_by: req.body.created_by,
-    assigned_to: req.body.assigned_to,
+    assigned_to: req.body.assigned_to || '',
     open: true,
-    status_text: req.body.status_text,
+    status_text: req.body.status_text || '',
     project: req.params.project
   });
   issue.save(function(err, data) {
     if (err) return console.error(err);
-    res.json(data);
+    let data1 = JSON.parse(JSON.stringify(data));
+    delete data1.__v;
+    delete data1.project;
+    res.json(data1);
   });    
 })
 
-app.put('/api/issues/:project_name', function(req,res){    
+app.put('/api/issues/:project_name', function(req,res){
+  if (!req.body._id){
+    res.json({"error":"missing _id"}); return;
+  }
   Issue.findById({"_id":req.body._id}, function(err, data){
     if (err) {res.json({"error":"could not update","_id":req.body._id}); return;}
     if (data){
@@ -138,11 +146,11 @@ app.put('/api/issues/:project_name', function(req,res){
           res.json({error: 'no update field(s) sent', "_id":req.body._id});
       }
       else {
-        data.issue_title = req.body.issue_title;
-        data.issue_text = req.body.issue_text;
-        data.created_by = req.body.created_by;
-        data.assigned_to = req.body.assigned_to;
-        data.status_text = req.body.status_text;
+        data.issue_title = req.body.issue_title || '';
+        data.issue_text = req.body.issue_text || '';
+        data.created_by = req.body.created_by || '';
+        data.assigned_to = req.body.assigned_to || '';
+        data.status_text = req.body.status_text || '';
         data.updated_on = new Date();
         data.open = !(req.body.hasOwnProperty('open'));
         data.save(function(err, data) {
@@ -158,6 +166,9 @@ app.put('/api/issues/:project_name', function(req,res){
 })
 
 app.delete('/api/issues/:project_name', function(req,res){
+  if (!req.body._id){
+    res.json({"error":"missing _id"}); return;
+  }  
   //find id and remove
   Issue.findByIdAndRemove({"_id":req.body._id}, function(err, data){
     if (err) {res.json({"error":"could not delete","_id":req.body._id}); return;}
