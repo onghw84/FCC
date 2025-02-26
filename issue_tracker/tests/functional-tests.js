@@ -21,7 +21,9 @@ suite('Functional Tests', function() {
             created_by: "creator1",
             assigned_to: "assignedto1",
             status_text: "statustext1"})
-          .end(function (err, res) {            
+          .end(function (err, res) {          
+            
+//            The POST request to /api/issues/{projectname} will return the created object, and must include all of the submitted fields. Excluded optional fields will be returned as empty strings. Additionally, include created_on (date/time), updated_on (date/time), open (boolean, true for open - default value, false for closed), and _id.            
             assert.equal(res.status, 200);            
             const data = JSON.parse(res.text);
             assert.isDefined(data._id);
@@ -33,7 +35,6 @@ suite('Functional Tests', function() {
             assert.equal(data.assigned_to, 'assignedto1');
             assert.isTrue(data.open);
             assert.equal(data.status_text, 'statustext1');
-            assert.equal(data.project, 'test_project');
             done();
           });               
       });
@@ -63,7 +64,6 @@ suite('Functional Tests', function() {
             assert.equal(data.assigned_to, '');
             assert.isTrue(data.open);
             assert.equal(data.status_text, '');
-            assert.equal(data.project, 'test_project');
             done();
           });               
       });
@@ -77,14 +77,12 @@ suite('Functional Tests', function() {
         .set('content-type', 'application/x-www-form-urlencoded')
         .send({issue_title: 'title3', 
           issue_text: 'issuetext3',
-          created_by: "",
           assigned_to: "",
           status_text: ""})
         .end(function (err, res) {            
           assert.equal(res.status, 200);            
           const data = JSON.parse(res.text);
-          console.log(data);
-          assert.equal(data.Error,"required field(s) missing");
+          assert.equal(data.error,"required field(s) missing");
           done();
         });            
       });
@@ -110,7 +108,6 @@ suite('Functional Tests', function() {
           assert.isDefined(data[len-1].assigned_to);
           assert.isDefined(data[len-1].open);
           assert.isDefined(data[len-1].status_text);
-          assert.isDefined(data[len-1].project);
           done();
         });            
       });      
@@ -136,7 +133,6 @@ suite('Functional Tests', function() {
           assert.isDefined(data[len-1].assigned_to);
           assert.isTrue(data[len-1].open);
           assert.isDefined(data[len-1].status_text);
-          assert.isDefined(data[len-1].project);
           done();
         });            
       });        
@@ -162,7 +158,6 @@ suite('Functional Tests', function() {
           assert.equal(data[len-1].assigned_to, "assignedto1");
           assert.isTrue(data[len-1].open);
           assert.isDefined(data[len-1].status_text);
-          assert.isDefined(data[len-1].project);
           done();
         });            
       });        
@@ -220,7 +215,6 @@ suite('Functional Tests', function() {
               assert.equal(data2[len2-1].assigned_to, "testassign7");
               assert.isTrue(data2[len2-1].open);
               assert.equal(data2[len2-1].status_text,"");
-              assert.equal(data2[len2-1].project,"test_project");
             });
           });
           done();
@@ -282,7 +276,6 @@ suite('Functional Tests', function() {
               assert.equal(data2[len-1].assigned_to, "testassign8");
               assert.isFalse(data2[len-1].open);
               assert.equal(data2[len-1].status_text,"");
-              assert.equal(data2[len-1].project,"test_project");
             });
           });
           done();
@@ -306,7 +299,7 @@ suite('Functional Tests', function() {
           .end(function (err, res) {
             assert.equal(res.status, 200);   
             const data1 = JSON.parse(res.text);
-            assert.equal(data1.error, "could not update");
+            assert.equal(data1.error, "missing _id");
         });
         done();
       }); 
@@ -335,12 +328,7 @@ suite('Functional Tests', function() {
             .keepOpen()
             .put('/api/issues/test_project')
             .set('content-type', 'application/x-www-form-urlencoded')
-            .send({_id: _id, 
-              issue_title: "",
-              issue_text: "",
-              created_by: "",
-              assigned_to: "",
-              status_text: ""})          
+            .send({_id: _id})          
             .end(function (err, res) {
               assert.equal(res.status, 200);
               const data1 = JSON.parse(res.text);
@@ -368,8 +356,8 @@ suite('Functional Tests', function() {
           .end(function (err, res) {
             assert.equal(res.status, 200);   
             const data1 = JSON.parse(res.text);
-            assert.equal(data1.error, "could not update");
-            assert.equal(data1._id, "abcdefg");
+            assert.deepEqual(data1.error, "could not update");
+            assert.deepEqual(data1._id, "abcdefg");
         });
         done();
       }); 
@@ -449,7 +437,7 @@ suite('Functional Tests', function() {
         .end(function (err, res) {
           assert.equal(res.status, 200);            
           const data1 = JSON.parse(res.text);
-          assert.equal(data1.error, "could not delete");
+          assert.equal(data1.error, "missing _id");
         });
         done();
       });
