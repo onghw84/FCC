@@ -17,6 +17,7 @@ module.exports = function (app) {
       const coord = req.body.coordinate.toUpperCase();      
       const value = req.body.value;
       const valid = solver.validate(puzzle);
+      
       if (valid.error){
         res.json(valid); return;
       }
@@ -25,6 +26,10 @@ module.exports = function (app) {
       }      
       if (!coord.match(/^([A-I][1-9])$/)){
         res.json({ "error": "Invalid coordinate" }); return;
+      }
+
+      if (solver.getNumber(puzzle, coord) == value){
+        res.json({"valid": true}); return;
       }
 
       const result = {}; result.valid = true; result.conflict = [];
@@ -40,7 +45,7 @@ module.exports = function (app) {
         result.valid = false; result.conflict.push("region");      
       }
       if (result.conflict.length == 0){
-        res.json({"valid": "true"});        
+        res.json({"valid": true});        
       }
       else {res.json(result);}
     });
