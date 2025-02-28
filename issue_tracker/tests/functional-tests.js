@@ -22,8 +22,6 @@ suite('Functional Tests', function() {
             assigned_to: "assignedto1",
             status_text: "statustext1"})
           .end(function (err, res) {          
-            
-//            The POST request to /api/issues/{projectname} will return the created object, and must include all of the submitted fields. Excluded optional fields will be returned as empty strings. Additionally, include created_on (date/time), updated_on (date/time), open (boolean, true for open - default value, false for closed), and _id.            
             assert.equal(res.status, 200);            
             const data = JSON.parse(res.text);
             assert.isDefined(data._id);
