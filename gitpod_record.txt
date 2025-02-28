@@ -15,3 +15,5 @@ https://freecodecam-boilerplate-r70i6fja4g0.ws-us118.gitpod.io/
 Sudoku solver
 https://freecodecam-boilerplate-17wbs3a57yn.ws-us118.gitpod.io/
 
+English Translator
+https://freecodecam-boilerplate-lo4p5i1beot.ws-us118.gitpod.io/
