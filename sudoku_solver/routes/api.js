@@ -9,7 +9,7 @@ module.exports = function (app) {
   app.route('/api/check')
     .post((req, res) => {
 
-      if (!(req.body.puzzle && req.body.coordinate && req.body.value)){
+      if (!(req.body.hasOwnProperty('puzzle') && req.body.hasOwnProperty('coordinate') && req.body.hasOwnProperty('value'))){
         res.json({ error: 'Required field(s) missing' });
       }
 
@@ -52,7 +52,7 @@ module.exports = function (app) {
     
   app.route('/api/solve')
     .post((req, res) => {
-      if (!req.body.puzzle){
+      if (!req.body.hasOwnProperty('puzzle')){
         res.json({ error: 'Required field missing' }); return;
       }
       const puzzle = req.body.puzzle;
