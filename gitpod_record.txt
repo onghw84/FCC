@@ -11,3 +11,7 @@ https://freecodecam-boilerplate-z5zdtnqe5ov.ws-us118.gitpod.io/
 
 Personal_Library
 https://freecodecam-boilerplate-r70i6fja4g0.ws-us118.gitpod.io/
+
+Sudoku solver
+https://freecodecam-boilerplate-17wbs3a57yn.ws-us118.gitpod.io/
+
