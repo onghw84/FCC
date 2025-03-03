@@ -27,16 +27,13 @@ module.exports = function (app) {
       }
 
       var text = req.body.text;
-      text = translator.timeTranslate(locale, text);
-      text = translator.AmericanOnlyTranslate(locale, text);
-      text = translator.BritishOnlyTranslate(locale, text);
-      text = translator.AmericanToBritishTitleTranslate(locale, text);
-      text = translator.AmericanToBritishSpellingTranslate(locale, text);
+      var highlight = 1;
+      text = translator.Translate(locale, text, highlight);
       if (text == req.body.text){
-        res.json({translation: "Everything looks good to me!"}); return;
+        res.json({text: req.body.text, translation: "Everything looks good to me!"}); return;
       }
       else {
-        res.json({translation: text});
+        res.json({text: req.body.text, translation: text});
       }
     });
 };
