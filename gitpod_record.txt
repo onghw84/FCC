@@ -17,3 +17,6 @@ https://freecodecam-boilerplate-17wbs3a57yn.ws-us118.gitpod.io/
 
 English Translator
 https://freecodecam-boilerplate-lo4p5i1beot.ws-us118.gitpod.io/
+
+Chinese Character Card
+https://freecodecam-boilerplate-ovd5csty48l.ws-us118.gitpod.io/
